@@ -34,7 +34,7 @@ class wm():
 
     def handle_events(self):
         logging.debug(self.display.pending_events())
-        time.sleep(0.001)
+        time.sleep(0.01)
         if self.display.pending_events():
             event = self.display.next_event()
         else:
@@ -43,19 +43,28 @@ class wm():
         if event.type == X.MapRequest:
             self.windows.append(event.window)
             self.active = event.window
-            event.window.configure(width=844, height=844)
+            event.window.configure(
+                    width=int(self.width/2),
+                    height=int(self.height/2)
+                    )
             self.display.sync()
             event.window.map()
         elif event.type == X.KeyPress and event.detail == self.key_t:
             self.run_application(['/usr/bin/dmenu_run'])
         elif event.type == X.KeyPress and event.detail == self.key_q:
-            if self.active:
+            if self.active is not None:
                 self.active.destroy()
                 self.windows.remove(self.active)
                 self.active = None
-        elif event.type == X.KeyPress and event.detail == self.key_f:
+        elif event.type == X.KeyPress and event.detail == self.key_f and self.active is not None:
             self.active.configure(width=self.width, height=self.height)
             self.display.sync()
+
+    def set_active(self):
+        if self.root_window.query_pointer().child != self.root_window:
+            self.active = self.root_window.query_pointer().child
+        else:
+            self.active = None
 
 
 def main():
@@ -64,6 +73,7 @@ def main():
     subprocess.Popen(["/usr/bin/feh", "--bg-fill", "bg.jpg"])
     while True:
         WindowManager.handle_events()
+        WindowManager.set_active()
 
 
 WindowManager = wm()
