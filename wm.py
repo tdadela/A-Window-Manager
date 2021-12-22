@@ -32,9 +32,36 @@ class wm():
         subprocess.Popen(command)
 
 
+    def draw_windows(self):
+        n = len(self.windows)
+        for i, window in enumerate(self.windows):
+            print(int(self.width/n), int(self.height), int(i*self.width/n), 0)
+            '''
+            event.window.change_attributes(
+                    width=int(self.width/n),
+                    height=int(self.height),
+                    x=int(i*self.width/n),
+                    y=0
+                    )
+            window.map()
+            '''
+            window.configure(
+                width=int(self.width/n),
+                height=int(self.height),
+                x=int(i*self.width/n),
+                y=0
+            )
+        self.display.flush()  # ??
+        self.display.sync()  # ??
+
+
     def handle_events(self):
+        for window in self.windows:
+            if window not in self.root_window.query_tree().children:
+                self.windows.remove(window)
+                self.draw_windows()
         logging.debug(self.display.pending_events())
-        time.sleep(0.01)
+        time.sleep(.1)
         if self.display.pending_events():
             event = self.display.next_event()
         else:
@@ -43,12 +70,16 @@ class wm():
         if event.type == X.MapRequest:
             self.windows.append(event.window)
             self.active = event.window
+            '''
             event.window.configure(
-                    width=int(self.width/2),
-                    height=int(self.height/2)
+                    width=self.width//2,
+                    height=self.height//2,
+                    x=self.width//4,
+                    y=self.height//4
                     )
-            self.display.sync()
+            '''
             event.window.map()
+            self.draw_windows()
         elif event.type == X.KeyPress and event.detail == self.key_t:
             self.run_application(['/usr/bin/dmenu_run'])
         elif event.type == X.KeyPress and event.detail == self.key_q:
@@ -56,8 +87,19 @@ class wm():
                 self.active.destroy()
                 self.windows.remove(self.active)
                 self.active = None
+                self.draw_windows()
+        elif event.type == X.DestroyNotify:
+            window = event.window
+            self.windows.remove(window)
+            print(len(self.windows))
+
         elif event.type == X.KeyPress and event.detail == self.key_f and self.active is not None:
-            self.active.configure(width=self.width, height=self.height)
+            self.active.configure(
+                    width=self.width,
+                    height=self.height,
+                    y=0,
+                    x=0
+                    )
             self.display.sync()
 
     def set_active(self):
@@ -68,8 +110,8 @@ class wm():
 
 
 def main():
-    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-    logging.info('Window manager started.')
+    logging.basicConfig(filename='wm.log', filemode='a', level=logging.DEBUG)
+    logging.critical('Window manager started.')
     subprocess.Popen(["/usr/bin/feh", "--bg-fill", "bg.jpg"])
     while True:
         WindowManager.handle_events()
