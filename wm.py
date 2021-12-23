@@ -96,6 +96,7 @@ class wm():
         elif event.type == X.KeyPress and event.detail == self.key_f and self.active is not None:
             if not self.fullscreen:
                 self.active.configure(
+                        stack_mode=X.Above,
                         width=self.width,
                         height=self.height,
                         y=0,
