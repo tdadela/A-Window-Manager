@@ -34,25 +34,20 @@ class wm():
 
     def draw_windows(self):
         n = len(self.windows)
+        prev_end = -1
         for i, window in enumerate(self.windows):
-            print(int(self.width/n), int(self.height), int(i*self.width/n), 0)
-            '''
-            event.window.change_attributes(
-                    width=int(self.width/n),
-                    height=int(self.height),
-                    x=int(i*self.width/n),
-                    y=0
-                    )
-            window.map()
-            '''
+            if i == n - 1:
+                fill_till = self.width
+            else:
+                fill_till = self.width // n * (i + 1)
             window.configure(
-                width=int(self.width/n),
-                height=int(self.height),
-                x=int(i*self.width/n),
+                width=fill_till-prev_end,
+                height=self.height,
+                x=prev_end+1,
                 y=0
             )
-        self.display.flush()  # ??
-        self.display.sync()  # ??
+            prev_end = fill_till
+        self.display.sync()
 
 
     def handle_events(self):
@@ -60,12 +55,8 @@ class wm():
             if window not in self.root_window.query_tree().children:
                 self.windows.remove(window)
                 self.draw_windows()
-        logging.debug(self.display.pending_events())
-        time.sleep(.1)
-        if self.display.pending_events():
-            event = self.display.next_event()
-        else:
-            return
+        event = self.display.next_event()
+        self.set_active()
         logging.debug(event)
         if event.type == X.MapRequest:
             self.windows.append(event.window)
@@ -102,7 +93,6 @@ class wm():
                         y=0,
                         x=0
                         )
-                self.display.flush()
                 self.display.sync()
             else:
                 self.draw_windows()
@@ -112,6 +102,8 @@ class wm():
     def set_active(self):
         if self.root_window.query_pointer().child != self.root_window:
             self.active = self.root_window.query_pointer().child
+            if isinstance(self.active, int):
+                self.active = None
         else:
             self.active = None
 
@@ -122,7 +114,6 @@ def main():
     config.onStartup()
     while True:
         WindowManager.handle_events()
-        WindowManager.set_active()
 
 
 WindowManager = wm()
