@@ -13,6 +13,7 @@ class wm():
     def __init__(self):
         self.windows = []
         self.active = None
+        self.fullscreen = False
         self.display = Display()
         self.root_window = self.display.screen().root
         self.height = self.root_window.get_geometry().height
@@ -94,13 +95,19 @@ class wm():
             print(len(self.windows))
 
         elif event.type == X.KeyPress and event.detail == self.key_f and self.active is not None:
-            self.active.configure(
-                    width=self.width,
-                    height=self.height,
-                    y=0,
-                    x=0
-                    )
-            self.display.sync()
+            if not self.fullscreen:
+                self.active.configure(
+                        width=self.width,
+                        height=self.height,
+                        y=0,
+                        x=0
+                        )
+                self.display.flush()
+                self.display.sync()
+            else:
+                self.draw_windows()
+
+            self.fullscreen = not self.fullscreen
 
     def set_active(self):
         if self.root_window.query_pointer().child != self.root_window:
