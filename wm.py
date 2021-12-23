@@ -22,7 +22,7 @@ class wm():
         self.key_f = 41
         self.key_q = 24
         self.root_window.change_attributes(
-               event_mask=X.SubstructureRedirectMask)
+            event_mask=X.SubstructureRedirectMask)
         for i in [24, 28, 41]:
             self.root_window.grab_key(
                 i, X.Mod4Mask, 1, X.GrabModeAsync, X.GrabModeAsync
@@ -38,9 +38,9 @@ class wm():
             else:
                 fill_till = self.width // no_windows * (i + 1)
             window.configure(
-                width=fill_till-prev_end,
+                width=fill_till - prev_end,
                 height=self.height,
-                x=prev_end+1,
+                x=prev_end + 1,
                 y=0
             )
             prev_end = fill_till
@@ -58,14 +58,6 @@ class wm():
         if event.type == X.MapRequest:
             self.windows.append(event.window)
             self.active = event.window
-            '''
-            event.window.configure(
-                    width=self.width//2,
-                    height=self.height//2,
-                    x=self.width//4,
-                    y=self.height//4
-                    )
-            '''
             event.window.map()
             self.draw_windows()
         elif event.type == X.DestroyNotify:
@@ -88,12 +80,12 @@ class wm():
             elif event.detail == self.key_f and self.active is not None:
                 if not self.fullscreen:
                     self.active.configure(
-                            stack_mode=X.Above,
-                            width=self.width,
-                            height=self.height,
-                            y=0,
-                            x=0
-                            )
+                        stack_mode=X.Above,
+                        width=self.width,
+                        height=self.height,
+                        y=0,
+                        x=0
+                    )
                     self.display.sync()
                 else:
                     self.draw_windows()
@@ -114,7 +106,7 @@ def main():
     '''Main loop for window manager events.'''
     logging.basicConfig(filename='wm.log', filemode='w', level=logging.DEBUG)
     logging.debug('Window manager started.')
-    config.onStartup()
+    config.on_startup()
     while True:
         WindowManager.handle_events()
 
