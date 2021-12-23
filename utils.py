@@ -1,5 +1,10 @@
 import subprocess
 
+
+def run_application(command):
+	subprocess.Popen(command)
+
+
 def run_bash_command(cmd):
 	process = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE)
 	output, _ = process.communicate()
