@@ -1,7 +1,4 @@
 ''' A Window Manager'''
-import time
-import sys
-import subprocess
 import logging
 from Xlib import X, XK
 from Xlib.display import Display
@@ -31,15 +28,15 @@ class wm():
                 i, X.Mod4Mask, 1, X.GrabModeAsync, X.GrabModeAsync
             )
 
-
     def draw_windows(self):
-        n = len(self.windows)
+        '''Draw windows in horizontal tiling mode'''
+        no_windows = len(self.windows)
         prev_end = -1
         for i, window in enumerate(self.windows):
-            if i == n - 1:
+            if i == no_windows - 1:
                 fill_till = self.width
             else:
-                fill_till = self.width // n * (i + 1)
+                fill_till = self.width // no_windows * (i + 1)
             window.configure(
                 width=fill_till-prev_end,
                 height=self.height,
@@ -49,8 +46,8 @@ class wm():
             prev_end = fill_till
         self.display.sync()
 
-
     def handle_events(self):
+        '''Handle X11 events'''
         for window in self.windows:
             if window not in self.root_window.query_tree().children:
                 self.windows.remove(window)
@@ -71,35 +68,40 @@ class wm():
             '''
             event.window.map()
             self.draw_windows()
-        elif event.type == X.KeyPress and event.detail == self.key_t:
-            utils.run_application(utils.get_program_location("dmenu_run").split())
-        elif event.type == X.KeyPress and event.detail == self.key_q:
-            if self.active is not None:
-                self.active.destroy()
-                self.windows.remove(self.active)
-                self.active = None
-                self.draw_windows()
         elif event.type == X.DestroyNotify:
             window = event.window
+            window.unmap()
             self.windows.remove(window)
-            print(len(self.windows))
+        elif event.type == X.KeyPress:
+            if event.detail == self.key_t:
+                utils.run_application(
+                    utils.get_program_location("dmenu_run").split()
+                )
 
-        elif event.type == X.KeyPress and event.detail == self.key_f and self.active is not None:
-            if not self.fullscreen:
-                self.active.configure(
-                        stack_mode=X.Above,
-                        width=self.width,
-                        height=self.height,
-                        y=0,
-                        x=0
-                        )
-                self.display.sync()
-            else:
-                self.draw_windows()
+            elif event.detail == self.key_q:
+                if self.active is not None:
+                    self.active.destroy()
+                    self.windows.remove(self.active)
+                    self.active = None
+                    self.draw_windows()
 
-            self.fullscreen = not self.fullscreen
+            elif event.detail == self.key_f and self.active is not None:
+                if not self.fullscreen:
+                    self.active.configure(
+                            stack_mode=X.Above,
+                            width=self.width,
+                            height=self.height,
+                            y=0,
+                            x=0
+                            )
+                    self.display.sync()
+                else:
+                    self.draw_windows()
+
+                self.fullscreen = not self.fullscreen
 
     def set_active(self):
+        '''Set focused windows'''
         if self.root_window.query_pointer().child != self.root_window:
             self.active = self.root_window.query_pointer().child
             if isinstance(self.active, int):
@@ -109,7 +111,8 @@ class wm():
 
 
 def main():
-    logging.basicConfig(filename='wm.log', filemode='a', level=logging.DEBUG)
+    '''Main loop for window manager events.'''
+    logging.basicConfig(filename='wm.log', filemode='w', level=logging.DEBUG)
     logging.debug('Window manager started.')
     config.onStartup()
     while True:
