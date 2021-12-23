@@ -12,7 +12,7 @@ def run_bash_command(cmd):
 
 
 def check_program_existence(prog):
-	return bool(runBashCommand(f"which {prog}"))
+	return bool(run_bash_command(f"which {prog}"))
 
 
 def get_program_location(prog):
