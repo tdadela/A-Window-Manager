@@ -5,6 +5,7 @@ import subprocess
 import logging
 from Xlib import X, XK
 from Xlib.display import Display
+import utils
 
 
 class wm():
@@ -82,7 +83,7 @@ class wm():
             event.window.map()
             self.draw_windows()
         elif event.type == X.KeyPress and event.detail == self.key_t:
-            self.run_application(['/usr/bin/dmenu_run'])
+            self.run_application(utils.get_program_location("dmenu_run").split())
         elif event.type == X.KeyPress and event.detail == self.key_q:
             if self.active is not None:
                 self.active.destroy()
@@ -118,8 +119,8 @@ class wm():
 
 def main():
     logging.basicConfig(filename='wm.log', filemode='a', level=logging.DEBUG)
-    logging.critical('Window manager started.')
-    subprocess.Popen(["/usr/bin/feh", "--bg-fill", "bg.jpg"])
+    logging.debug('Window manager started.')
+    WindowManager.run_application(f"{utils.get_program_location('feh')} --bg-fill bg.jpg".split())
     while True:
         WindowManager.handle_events()
         WindowManager.set_active()
