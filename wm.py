@@ -2,17 +2,17 @@
 import logging
 from Xlib import X, XK
 from Xlib.display import Display
-import utils
+import lib.utils
 import config
-from workspace import Workspace
+from lib.workspace import Workspace
+from lib.workspace_manager import WorkspaceManager
 
 
-class wm():
+class wm:
     '''Main Window Manager class'''
 
     def __init__(self):
-        self.workspaces = [Workspace("1"), Workspace("2")]
-        self.active_workspace = 0
+        self.wsm = WorkspaceManager()
 
         self.active = None
         self.fullscreen = False
@@ -34,25 +34,10 @@ class wm():
             )
 
 
-    def get_current_workspace(self):
-        return self.workspaces[self.active_workspace]
-
-
-    def change_workspace(self, target):
-        for window in self.get_current_workspace().windows:
-            window.unmap()
-
-        self.active_workspace = target
-
-        for window in self.get_current_workspace().windows:
-            window.map()
-
-        self.draw_windows()
-
 
     def draw_windows(self):
         '''Draw windows in horizontal tiling mode'''
-        windows_to_draw = self.get_current_workspace().windows
+        windows_to_draw = self.wsm.get_current_workspace().windows
         no_windows = len(windows_to_draw)
         prev_end = -1
         for i, window in enumerate(windows_to_draw):
@@ -72,7 +57,7 @@ class wm():
 
     def handle_events(self):
         '''Handle X11 events'''
-        current_windows = self.get_current_workspace().windows
+        current_windows = self.wsm.get_current_workspace().windows
         for window in current_windows:
             if window not in self.root_window.query_tree().children:
                 current_windows.remove(window)
@@ -91,8 +76,8 @@ class wm():
             current_windows.remove(window)
         elif event.type == X.KeyPress:
             if event.detail == self.key_t:
-                utils.run_application(
-                    utils.get_program_location("dmenu_run").split()
+                lib.utils.run_application(
+                    lib.utils.get_program_location("dmenu_run").split()
                 )
 
             elif event.detail == self.key_q:
@@ -119,10 +104,10 @@ class wm():
 
 
             elif event.detail == self.key_1:
-                self.change_workspace(0)
+                self.wsm.change_workspace(0)
 
             elif event.detail == self.key_2:
-                self.change_workspace(1)
+                self.wsm.change_workspace(1)
 
 
     def set_active(self):
