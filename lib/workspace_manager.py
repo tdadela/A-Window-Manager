@@ -12,6 +12,8 @@ class WorkspaceManager:
 
 
     def change_workspace(self, target):
+        if target == self.active_workspace:
+            return
         for window in self.get_current_workspace().windows:
             # map/unmap doesn't need display.sync() to take effect
             window.unmap()

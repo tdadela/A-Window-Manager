@@ -33,8 +33,6 @@ class wm:
                 i, X.Mod4Mask, 1, X.GrabModeAsync, X.GrabModeAsync
             )
 
-
-
     def draw_windows(self):
         '''Draw windows in horizontal tiling mode'''
         windows_to_draw = self.wsm.get_current_workspace().windows
@@ -52,8 +50,7 @@ class wm:
                 y=0
             )
             prev_end = fill_till
-        self.display.sync()
-
+        self.display.flush()
 
     def handle_events(self):
         '''Handle X11 events'''
@@ -73,7 +70,12 @@ class wm:
         elif event.type == X.DestroyNotify:
             window = event.window
             window.unmap()
-            current_windows.remove(window)
+            for worksp in self.wsm.workspaces:
+                if window in worksp.windows:
+                    worksp.windows.remove(window)
+                    if self.wsm.get_current_workspace() == worksp:
+                        self.draw_windows()
+                    break
         elif event.type == X.KeyPress:
             if event.detail == self.key_t:
                 lib.utils.run_application(
@@ -96,19 +98,17 @@ class wm:
                         y=0,
                         x=0
                     )
-                    self.display.sync()
+                    self.display.flush()
                 else:
                     self.draw_windows()
 
                 self.fullscreen = not self.fullscreen
-
 
             elif event.detail == self.key_1:
                 self.wsm.change_workspace(0)
 
             elif event.detail == self.key_2:
                 self.wsm.change_workspace(1)
-
 
     def set_active(self):
         '''Set focused windows'''
