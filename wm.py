@@ -4,13 +4,16 @@ from Xlib import X, XK
 from Xlib.display import Display
 import utils
 import config
+from workspace import Workspace
 
 
 class wm():
     '''Main Window Manager class'''
 
     def __init__(self):
-        self.windows = []
+        self.workspaces = [Workspace("1"), Workspace("2")]
+        self.active_workspace = 0
+
         self.active = None
         self.fullscreen = False
         self.display = Display()
@@ -21,18 +24,38 @@ class wm():
         self.key_t = 28  # self.display.keysym_to_keycodes(XK.XK_T)
         self.key_f = 41
         self.key_q = 24
+        self.key_1 = 10
+        self.key_2 = 11
         self.root_window.change_attributes(
             event_mask=X.SubstructureRedirectMask)
-        for i in [24, 28, 41]:
+        for i in [10, 11, 24, 28, 41]:
             self.root_window.grab_key(
                 i, X.Mod4Mask, 1, X.GrabModeAsync, X.GrabModeAsync
             )
 
+
+    def get_current_workspace(self):
+        return self.workspaces[self.active_workspace]
+
+
+    def change_workspace(self, target):
+        for window in self.get_current_workspace().windows:
+            window.unmap()
+
+        self.active_workspace = target
+
+        for window in self.get_current_workspace().windows:
+            window.map()
+
+        self.draw_windows()
+
+
     def draw_windows(self):
         '''Draw windows in horizontal tiling mode'''
-        no_windows = len(self.windows)
+        windows_to_draw = self.get_current_workspace().windows
+        no_windows = len(windows_to_draw)
         prev_end = -1
-        for i, window in enumerate(self.windows):
+        for i, window in enumerate(windows_to_draw):
             if i == no_windows - 1:
                 fill_till = self.width
             else:
@@ -46,24 +69,26 @@ class wm():
             prev_end = fill_till
         self.display.sync()
 
+
     def handle_events(self):
         '''Handle X11 events'''
-        for window in self.windows:
+        current_windows = self.get_current_workspace().windows
+        for window in current_windows:
             if window not in self.root_window.query_tree().children:
-                self.windows.remove(window)
+                current_windows.remove(window)
                 self.draw_windows()
         event = self.display.next_event()
         self.set_active()
         logging.debug(event)
         if event.type == X.MapRequest:
-            self.windows.append(event.window)
+            current_windows.append(event.window)
             self.active = event.window
             event.window.map()
             self.draw_windows()
         elif event.type == X.DestroyNotify:
             window = event.window
             window.unmap()
-            self.windows.remove(window)
+            current_windows.remove(window)
         elif event.type == X.KeyPress:
             if event.detail == self.key_t:
                 utils.run_application(
@@ -73,7 +98,7 @@ class wm():
             elif event.detail == self.key_q:
                 if self.active is not None:
                     self.active.destroy()
-                    self.windows.remove(self.active)
+                    current_windows.remove(self.active)
                     self.active = None
                     self.draw_windows()
 
@@ -91,6 +116,14 @@ class wm():
                     self.draw_windows()
 
                 self.fullscreen = not self.fullscreen
+
+
+            elif event.detail == self.key_1:
+                self.change_workspace(0)
+
+            elif event.detail == self.key_2:
+                self.change_workspace(1)
+
 
     def set_active(self):
         '''Set focused windows'''
