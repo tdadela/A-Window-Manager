@@ -28,5 +28,5 @@ git add $arg
 git status
 echo Enter commit name.
 read -p 'Please, use conventional commits: '
-git commit -m \''$REPLY'\'
+git commit -m \'"$REPLY"\'
 git push
