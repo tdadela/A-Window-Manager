@@ -18,3 +18,6 @@ shortcuts = {
     "workspace_1_key": '1',
     "workspace_2_key": '2'
 }
+
+LOGFILE = 'wm.log'
+LAUNCHER = 'dmenu_run'

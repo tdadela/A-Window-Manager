@@ -15,13 +15,13 @@ class wm:
     def __init__(self):
         self.wsm = WorkspaceManager()
 
+        self.focus = None
         self.active = None
         self.fullscreen = False
         self.display = Display()
         self.root_window = self.display.screen().root
         self.height = self.root_window.get_geometry().height
         self.width = self.root_window.get_geometry().width
-        self.focus = None
         self.root_window.change_attributes(
             event_mask=X.SubstructureRedirectMask)
         for i in shortcut.values():
@@ -75,7 +75,7 @@ class wm:
         elif event.type == X.KeyPress:
             if event.detail == shortcut['launcher_key']:
                 lib.utils.run_application(
-                    lib.utils.get_program_location("dmenu_run").split()
+                    lib.utils.get_program_location(config.LOGFILE).split()
                 )
 
             elif event.detail == shortcut['close_window_key']:
@@ -118,7 +118,8 @@ class wm:
 
 def main():
     '''Main loop for window manager events.'''
-    logging.basicConfig(filename='wm.log', filemode='w', level=logging.DEBUG)
+    logging.basicConfig(filename=config.LOGFILE,
+                        filemode='w', level=logging.DEBUG)
     logging.debug('Window manager started.')
     config.on_startup()
     while True:
