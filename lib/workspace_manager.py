@@ -23,3 +23,7 @@ class WorkspaceManager:
             window.map()
 
         # self.draw_windows()
+
+    def receive_window(self, window):
+        self.workspaces[
+            self.active_workspace].receive_window(window)

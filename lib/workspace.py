@@ -5,3 +5,6 @@ class Workspace:
         self.name = name
         # self.active = False
         self.windows = []
+
+    def receive_window(self, window):
+        self.windows.append(window)

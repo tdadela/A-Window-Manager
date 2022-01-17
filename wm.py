@@ -49,6 +49,44 @@ class wm:
             prev_end = fill_till
         self.display.flush()
 
+    def handle_maprequest(self, event):
+        '''Handle X11 MapRequest'''
+        self.wsm.receive_window(event.window)
+        self.active = event.window
+        event.window.map()
+        self.draw_windows()
+
+    def run_launcher(self):
+        lib.utils.run_application(
+            lib.utils.get_program_location(config.LAUNCHER).split()
+        )
+
+    def close_window(self):
+        if self.active:
+            self.active.destroy()  # too brutal
+            current_windows = self.wsm.get_current_workspace().windows
+            current_windows.remove(self.active)
+            self.active = None
+            self.draw_windows()
+
+    def full_screen(self):
+        if not self.active:
+            return
+
+        if not self.fullscreen:
+            self.active.configure(
+                stack_mode=X.Above,
+                width=self.width,
+                height=self.height,
+                y=0,
+                x=0
+            )
+            self.display.flush()
+        else:
+            self.draw_windows()
+
+        self.fullscreen = not self.fullscreen
+
     def handle_events(self):
         '''Handle X11 events'''
         current_windows = self.wsm.get_current_workspace().windows
@@ -60,10 +98,7 @@ class wm:
         self.set_active()
         logging.debug(event)
         if event.type == X.MapRequest:
-            current_windows.append(event.window)
-            self.active = event.window
-            event.window.map()
-            self.draw_windows()
+            self.handle_maprequest(event)
         elif event.type == X.DestroyNotify:
             window = event.window
             window.unmap()
@@ -74,37 +109,17 @@ class wm:
                         self.draw_windows()
                     break
         elif event.type == X.KeyPress:
-            if event.detail == shortcut['launcher_key']:
-                lib.utils.run_application(
-                    lib.utils.get_program_location(config.LAUNCHER).split()
-                )
-
-            elif event.detail == shortcut['close_window_key']:
-                if self.active is not None:
-                    self.active.destroy()
-                    current_windows.remove(self.active)
-                    self.active = None
-                    self.draw_windows()
-
-            elif event.detail == shortcut['full_screen_key'] and self.active:
-                if not self.fullscreen:
-                    self.active.configure(
-                        stack_mode=X.Above,
-                        width=self.width,
-                        height=self.height,
-                        y=0,
-                        x=0
-                    )
-                    self.display.flush()
-                else:
-                    self.draw_windows()
-
-                self.fullscreen = not self.fullscreen
-
-            elif event.detail in workspace_number.keys():
+            if event.detail in workspace_number.keys():
                 self.wsm.change_workspace(
                     workspace_number[event.detail]
                 )
+
+            if event.detail == shortcut['launcher_key']:
+                self.run_launcher()
+            elif event.detail == shortcut['close_window_key']:
+                self.close_window()
+            elif event.detail == shortcut['full_screen_key']:
+                self.full_screen()
 
     def set_active(self):
         '''Set focused windows'''
