@@ -1,19 +1,20 @@
 ''' A Window Manager'''
 import logging
+import itertools
 from Xlib import X, XK
 from Xlib.display import Display
 import lib.utils
 import config
 from lib.workspace import Workspace
 from lib.workspace_manager import WorkspaceManager
-from shortcut import shortcut
+from shortcut import shortcut, workspace_number
 
 
 class wm:
     '''Main Window Manager class'''
 
     def __init__(self):
-        self.wsm = WorkspaceManager()
+        self.wsm = WorkspaceManager(config.NO_WORKSPACES)
 
         self.focus = None
         self.active = None
@@ -24,7 +25,7 @@ class wm:
         self.width = self.root_window.get_geometry().width
         self.root_window.change_attributes(
             event_mask=X.SubstructureRedirectMask)
-        for i in shortcut.values():
+        for i in itertools.chain(shortcut.values(), workspace_number.keys()):
             self.root_window.grab_key(
                 i, X.Mod4Mask, 1, X.GrabModeAsync, X.GrabModeAsync
             )
@@ -75,7 +76,7 @@ class wm:
         elif event.type == X.KeyPress:
             if event.detail == shortcut['launcher_key']:
                 lib.utils.run_application(
-                    lib.utils.get_program_location(config.LOGFILE).split()
+                    lib.utils.get_program_location(config.LAUNCHER).split()
                 )
 
             elif event.detail == shortcut['close_window_key']:
@@ -85,7 +86,7 @@ class wm:
                     self.active = None
                     self.draw_windows()
 
-            elif event.detail == shortcut['fullscreen_key'] and self.active is not None:
+            elif event.detail == shortcut['full_screen_key'] and self.active:
                 if not self.fullscreen:
                     self.active.configure(
                         stack_mode=X.Above,
@@ -100,11 +101,10 @@ class wm:
 
                 self.fullscreen = not self.fullscreen
 
-            elif event.detail == shortcut['workspace_1_key']:
-                self.wsm.change_workspace(0)
-
-            elif event.detail == shortcut['workspace_2_key']:
-                self.wsm.change_workspace(1)
+            elif event.detail in workspace_number.keys():
+                self.wsm.change_workspace(
+                    workspace_number[event.detail]
+                )
 
     def set_active(self):
         '''Set focused windows'''

@@ -3,8 +3,8 @@ from lib.workspace import Workspace
 
 class WorkspaceManager:
 
-    def __init__(self):
-        self.workspaces = [Workspace("1"), Workspace("2")]
+    def __init__(self, no_workspaces):
+        self.workspaces = [Workspace(str(i + 1)) for i in range(no_workspaces)]
         self.active_workspace = 0
 
     def get_current_workspace(self):

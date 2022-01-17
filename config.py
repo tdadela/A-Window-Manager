@@ -4,7 +4,7 @@ import lib.utils
 
 def on_startup():
     '''User startup script.'''
-    background_file = "bg.jpg"
+    background_file = 'bg.jpg'
     lib.utils.run_application(
         f"{lib.utils.get_program_location('feh')} --bg-fill {background_file}"
         .split()
@@ -12,12 +12,13 @@ def on_startup():
 
 
 shortcuts = {
-    "fullscreen_key": 'f',
-    "close_window_key": 'q',
-    "launcher_key": 't',
-    "workspace_1_key": '1',
-    "workspace_2_key": '2'
+    'full_screen_key': 'f',
+    'close_window_key': 'q',
+    'launcher_key': 't',
 }
+
+workspace_keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+NO_WORKSPACES = len(workspace_keys)
 
 LOGFILE = 'wm.log'
 LAUNCHER = 'dmenu_run'
