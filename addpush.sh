@@ -2,7 +2,7 @@
 
 arg='.'
 if [[ $# -eq 1 ]]; then
-	arg=$1
+	arg=$@
 fi
 
 echo Repositiory: $(basename `git rev-parse --show-toplevel`)

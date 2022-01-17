@@ -9,3 +9,12 @@ def on_startup():
         f"{lib.utils.get_program_location('feh')} --bg-fill {background_file}"
         .split()
     )
+
+
+shortcuts = {
+    "fullscreen_key": 'f',
+    "close_window_key": 'q',
+    "launcher_key": 't',
+    "workspace_1_key": '1',
+    "workspace_2_key": '2'
+}
