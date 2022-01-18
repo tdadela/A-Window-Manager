@@ -1,5 +1,12 @@
 # A Window Manager
 A simple tiling window manager.
+## Installation
+
+```bash
+$ git clone https://github.com/tdadela/A-Window-Manager
+$ cd A-Window-Manager
+$ ./setup.sh
+```
 ## Usage
 To use window manager in the emulator:
 ```bash
