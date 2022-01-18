@@ -27,3 +27,12 @@ class WorkspaceManager:
     def receive_window(self, window):
         self.workspaces[
             self.active_workspace].add_window(window)
+
+    def remove_window(self, window):
+        window.unmap()
+        for wsp in self.workspaces:
+            wsp.remove_window(window)
+
+    def move_between_workspaces(self, window, target):
+        self.remove_window(window)
+        self.workspaces[target].receive_window(window)

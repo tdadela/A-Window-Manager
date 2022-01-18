@@ -7,7 +7,7 @@ BACKGROUND_SETTER_ARGS = '--bg-fill'
 shortcuts = {
     'full_screen_key': 'f',
     'close_window_key': 'q',
-    'launcher_key': 't',
+    'launcher_key': 'd',
 }
 
 workspace_keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']

@@ -19,6 +19,9 @@ class Tree():
         if window in self.windows:
             self.windows.remove(window)
 
+    def receive_window(self, window):
+        self.windows.append(window)
+
     def get_all_windows(self):
         '''Return list of all windows'''
         return self.windows

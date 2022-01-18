@@ -6,7 +6,7 @@ from Xlib.display import Display
 import lib.utils
 import config
 from lib.workspace_manager import WorkspaceManager
-from setting import shortcut, workspace_number, NO_WORKSPACES, on_startup, MODKEY_MASK
+from setting import shortcut, workspace_number, NO_WORKSPACES, on_startup, MODKEY_MASK, CHANGE_WINDOW_WORKSPACE
 from lib.tree import Tree
 
 
@@ -28,6 +28,10 @@ class WindowManager:
         for i in itertools.chain(shortcut.values(), workspace_number.keys()):
             self.root_window.grab_key(
                 i, MODKEY_MASK, 1, X.GrabModeAsync, X.GrabModeAsync
+            )
+        for i in itertools.chain(workspace_number.keys()):
+            self.root_window.grab_key(
+                i, CHANGE_WINDOW_WORKSPACE, 1, X.GrabModeAsync, X.GrabModeAsync
             )
 
     def draw_windows(self):
@@ -105,6 +109,7 @@ class WindowManager:
                 current_windows.remove(window)
                 self.draw_windows()
         event = self.display.next_event()
+        print(event)
         self.set_active()
         logging.debug(event)
         if event.type == X.MapRequest:
@@ -113,9 +118,14 @@ class WindowManager:
             self.handle_destroyrequest(event)
         elif event.type == X.KeyPress:
             if event.detail in workspace_number.keys():
-                self.wsm.change_workspace(
-                    workspace_number[event.detail]
-                )
+                if event.state == MODKEY_MASK:
+                    self.wsm.change_workspace(
+                        workspace_number[event.detail]
+                    )
+                elif event.state == CHANGE_WINDOW_WORKSPACE:
+                    if self.active:
+                        self.wsm.move_between_workspaces(
+                            self.active, workspace_number[event.detail])
 
             if event.detail == shortcut['launcher_key']:
                 self.run_launcher()
