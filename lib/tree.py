@@ -3,6 +3,7 @@
 
 class Tree():
     '''Window Tree for managing windows locations'''
+
     def __init__(self, geometry):
         self.height = geometry.height
         self.width = geometry.width
@@ -10,14 +11,18 @@ class Tree():
         self.nodes = []
 
     def add_window(self, window):
+        '''Add window to tree'''
         self.windows.append(window)
 
     def remove_window(self, window):
+        '''Remove window from tree'''
         if window in self.windows:
             self.windows.remove(window)
 
     def get_all_windows(self):
-        return windows
+        '''Return list of all windows'''
+        return self.windows
+
 
 class Node():
 

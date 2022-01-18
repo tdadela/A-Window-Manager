@@ -1,10 +1,10 @@
-from lib.workspace import Workspace
+from lib.tree import Tree
 
 
 class WorkspaceManager:
 
-    def __init__(self, no_workspaces):
-        self.workspaces = [Workspace(str(i + 1)) for i in range(no_workspaces)]
+    def __init__(self, geometry, no_workspaces):
+        self.workspaces = [Tree(geometry) for i in range(no_workspaces)]
         self.active_workspace = 0
 
     def get_current_workspace(self):
@@ -26,4 +26,4 @@ class WorkspaceManager:
 
     def receive_window(self, window):
         self.workspaces[
-            self.active_workspace].receive_window(window)
+            self.active_workspace].add_window(window)

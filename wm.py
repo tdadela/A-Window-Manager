@@ -5,24 +5,24 @@ from Xlib import X, XK
 from Xlib.display import Display
 import lib.utils
 import config
-from lib.workspace import Workspace
 from lib.workspace_manager import WorkspaceManager
 from setting import shortcut, workspace_number, NO_WORKSPACES, on_startup, MODKEY_MASK
+from lib.tree import Tree
 
 
-class wm:
+class WindowManager:
     '''Main Window Manager class'''
 
     def __init__(self):
-        self.wsm = WorkspaceManager(NO_WORKSPACES)
-
-        self.focus = None
         self.active = None
         self.fullscreen = False
         self.display = Display()
         self.root_window = self.display.screen().root
         self.height = self.root_window.get_geometry().height
         self.width = self.root_window.get_geometry().width
+        self.wsm = WorkspaceManager(
+            self.root_window.get_geometry(), NO_WORKSPACES)
+
         self.root_window.change_attributes(
             event_mask=X.SubstructureRedirectMask)
         for i in itertools.chain(shortcut.values(), workspace_number.keys()):
@@ -126,10 +126,9 @@ class wm:
 
     def set_active(self):
         '''Set focused windows'''
-        if self.root_window.query_pointer().child != self.root_window:
-            self.active = self.root_window.query_pointer().child
-            if isinstance(self.active, int):
-                self.active = None
+        pointed = self.root_window.query_pointer().child
+        if pointed != self.root_window or isinstance(pointed, int):
+            self.active = pointed
         else:
             self.active = None
 
@@ -141,10 +140,10 @@ def main():
     logging.debug('Window manager started.')
     on_startup()
     while True:
-        WindowManager.handle_events()
+        window_manager.handle_events()
 
 
-WindowManager = wm()
+window_manager = WindowManager()
 
 if __name__ == "__main__":
     main()
