@@ -7,4 +7,5 @@ class Workspace:
         self.windows = []
 
     def receive_window(self, window):
+        '''Add window to work space'''
         self.windows.append(window)
