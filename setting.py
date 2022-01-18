@@ -1,10 +1,22 @@
+'''Processing user's config'''
 import config
+from Xlib import X
 from Xlib.display import Display
+from lib import utils
 
 
-def key_to_keycodes(key):
+def on_startup():
+    '''User startup script.'''
+    background_file = config.BACKGROUND_FILE
+    utils.run_application(
+        [utils.get_program_location(config.BACKGROUND_SETTER),
+            config.BACKGROUND_SETTER_ARGS, background_file]
+    )
+
+
+def key_to_keycodes(char):
     '''Convert key to its key code'''
-    key_code = list(Display().keysym_to_keycodes(ord(key)))[0][0]
+    key_code = list(Display().keysym_to_keycodes(ord(char)))[0][0]
     return key_code
 
 
@@ -21,3 +33,4 @@ for i, key in enumerate(config.workspace_keys):
 
 
 NO_WORKSPACES = len(config.workspace_keys)
+MODKEY_MASK = X.Mod1Mask if config.MODKEY == '1' else X.Mod4Mask

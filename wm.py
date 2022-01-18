@@ -7,14 +7,14 @@ import lib.utils
 import config
 from lib.workspace import Workspace
 from lib.workspace_manager import WorkspaceManager
-from shortcut import shortcut, workspace_number
+from setting import shortcut, workspace_number, NO_WORKSPACES, on_startup, MODKEY_MASK
 
 
 class wm:
     '''Main Window Manager class'''
 
     def __init__(self):
-        self.wsm = WorkspaceManager(config.NO_WORKSPACES)
+        self.wsm = WorkspaceManager(NO_WORKSPACES)
 
         self.focus = None
         self.active = None
@@ -27,7 +27,7 @@ class wm:
             event_mask=X.SubstructureRedirectMask)
         for i in itertools.chain(shortcut.values(), workspace_number.keys()):
             self.root_window.grab_key(
-                i, X.Mod4Mask, 1, X.GrabModeAsync, X.GrabModeAsync
+                i, MODKEY_MASK, 1, X.GrabModeAsync, X.GrabModeAsync
             )
 
     def draw_windows(self):
@@ -55,6 +55,16 @@ class wm:
         self.active = event.window
         event.window.map()
         self.draw_windows()
+
+    def handle_destroyrequest(self, event):
+        window = event.window
+        window.unmap()
+        for worksp in self.wsm.workspaces:
+            if window in worksp.windows:
+                worksp.windows.remove(window)
+                if self.wsm.get_current_workspace() == worksp:
+                    self.draw_windows()
+                break
 
     def run_launcher(self):
         lib.utils.run_application(
@@ -100,14 +110,7 @@ class wm:
         if event.type == X.MapRequest:
             self.handle_maprequest(event)
         elif event.type == X.DestroyNotify:
-            window = event.window
-            window.unmap()
-            for worksp in self.wsm.workspaces:
-                if window in worksp.windows:
-                    worksp.windows.remove(window)
-                    if self.wsm.get_current_workspace() == worksp:
-                        self.draw_windows()
-                    break
+            self.handle_destroyrequest(event)
         elif event.type == X.KeyPress:
             if event.detail in workspace_number.keys():
                 self.wsm.change_workspace(
@@ -136,7 +139,7 @@ def main():
     logging.basicConfig(filename=config.LOGFILE,
                         filemode='w', level=logging.DEBUG)
     logging.debug('Window manager started.')
-    config.on_startup()
+    on_startup()
     while True:
         WindowManager.handle_events()
 

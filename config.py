@@ -1,15 +1,8 @@
 '''Config file'''
-import lib.utils
 
-
-def on_startup():
-    '''User startup script.'''
-    background_file = 'bg.jpg'
-    lib.utils.run_application(
-        f"{lib.utils.get_program_location('feh')} --bg-fill {background_file}"
-        .split()
-    )
-
+BACKGROUND_FILE = 'bg.jpg'
+BACKGROUND_SETTER = 'feh'
+BACKGROUND_SETTER_ARGS = '--bg-fill'
 
 shortcuts = {
     'full_screen_key': 'f',
@@ -18,7 +11,7 @@ shortcuts = {
 }
 
 workspace_keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
-NO_WORKSPACES = len(workspace_keys)
 
 LOGFILE = 'wm.log'
 LAUNCHER = 'dmenu_run'
+MODKEY = '1'  # '4' for Win key, '1' for Alt key
