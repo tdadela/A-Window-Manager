@@ -33,7 +33,7 @@ class WorkspaceManager:
             try:
                 soc.connect((self.host, self.port))
                 soc.send(message.encode('utf-8'))
-            except:
+            except BaseException:
                 pass
 
         # self.draw_windows()

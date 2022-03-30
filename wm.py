@@ -15,6 +15,7 @@ class WindowManager:
 
     def __init__(self):
         self.active = None
+        self.horizontal = True
         self.fullscreen = False
         self.display = Display()
         self.root_window = self.display.screen().root
@@ -40,18 +41,33 @@ class WindowManager:
         windows_to_draw = self.wsm.get_current_workspace().get_all_windows()
         no_windows = len(windows_to_draw)
         prev_end = -1
-        for i, window in enumerate(windows_to_draw):
-            if i == no_windows - 1:
-                fill_till = self.width
-            else:
-                fill_till = self.width // no_windows * (i + 1)
-            window.configure(
-                width=fill_till - prev_end,
-                height=self.height,
-                x=prev_end + 1,
-                y=0
-            )
-            prev_end = fill_till
+        if self.horizontal:
+            for i, window in enumerate(windows_to_draw):
+                if i == no_windows - 1:
+                    fill_till = self.width
+                else:
+                    fill_till = self.width // no_windows * (i + 1)
+                window.configure(
+                    width=fill_till - prev_end,
+                    height=self.height,
+                    x=prev_end + 1,
+                    y=0
+                )
+                prev_end = fill_till
+        else:
+            for i, window in enumerate(windows_to_draw):
+                if i == no_windows - 1:
+                    fill_till = self.height
+                else:
+                    fill_till = self.height // no_windows * (i + 1)
+                window.configure(
+                    height=fill_till - prev_end,
+                    width=self.width,
+                    y=prev_end + 1,
+                    x=0
+                )
+                prev_end = fill_till
+
         self.display.flush()
 
     def handle_maprequest(self, event):
@@ -156,6 +172,9 @@ class WindowManager:
                 if self.active:
                     self.wsm.move_window_right(self.active)
                     self.draw_windows()
+            elif event.detail == shortcut['rotate']:
+                self.horizontal = not self.horizontal
+                self.draw_windows()
 
     def set_active(self):
         '''Set focused windows'''
