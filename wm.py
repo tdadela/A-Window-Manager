@@ -37,7 +37,7 @@ class WindowManager:
 
     def draw_windows(self):
         '''Draw windows in horizontal tiling mode'''
-        windows_to_draw = self.wsm.get_current_workspace().windows
+        windows_to_draw = self.wsm.get_current_workspace().get_all_windows()
         no_windows = len(windows_to_draw)
         prev_end = -1
         for i, window in enumerate(windows_to_draw):
@@ -82,8 +82,7 @@ class WindowManager:
         '''Close active window'''
         if self.active:
             self.active.destroy()  # too brutal
-            current_windows = self.wsm.get_current_workspace().windows
-            current_windows.remove(self.active)
+            self.wsm.remove_window(self.active)
             self.active = None
             self.draw_windows()
 
@@ -93,8 +92,12 @@ class WindowManager:
             return
 
         if not self.fullscreen:
+            windows = self.wsm.get_current_workspace().get_all_windows()
+            for window in windows:
+                if window != self.active:
+                    window.unmap()
             self.active.configure(
-                stack_mode=X.Above,
+                #  stack_mode=X.Above,
                 width=self.width,
                 height=self.height,
                 y=0,
@@ -102,6 +105,10 @@ class WindowManager:
             )
             self.display.flush()
         else:
+            windows = self.wsm.get_current_workspace().get_all_windows()
+            for window in windows:
+                if window != self.active:
+                    window.map()
             self.draw_windows()
 
         self.fullscreen = not self.fullscreen
@@ -111,7 +118,8 @@ class WindowManager:
         current_windows = self.wsm.get_current_workspace().get_all_windows()
         for window in current_windows:
             if window not in self.root_window.query_tree().children:
-                current_windows.remove(window)
+                # current_windows.remove(window)
+                self.wsm.remove_window(window)
                 self.draw_windows()
         event = self.display.next_event()
         print(event)

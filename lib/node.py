@@ -1,92 +1,73 @@
 '''Window Tree for managing windows locations'''
+from enum import Enum
 
 
-class Tree():
-    '''Window Tree for managing windows locations'''
-
-    def __init__(self, geometry):
-        self.height = geometry.height
-        self.width = geometry.width
-        self.windows = []
-        self.nodes = []
-
-    def add_window(self, window):
-        '''Add window to tree'''
-        self.windows.append(window)
-
-    def remove_window(self, window):
-        '''Remove window from tree'''
-        if window in self.windows:
-            self.windows.remove(window)
-
-    def receive_window(self, window):
-        self.windows.append(window)
-
-    def get_all_windows(self):
-        '''Return list of all windows'''
-        return self.windows
-
-    def move_left(self, window):
-        if window in self.windows:
-            i = self.windows.index(window)
-            if i > 0:
-                self.windows[i-1], self.windows[i] = self.windows[i], self.windows[i-1]
-
-    def move_right(self, window):
-        if window in self.windows:
-            i = self.windows.index(window)
-            if i < len(self.windows)-1:
-                self.windows[i+1], self.windows[i] = self.windows[i], self.windows[i+1]
+class Orientation (Enum):
+    horizontal = 0
+    vertical = 1
 
 
 class Node():
     '''Node in Window Tree responsible for managing windows locations'''
 
-    def __init__(self, geometry, window, parent):
+    def __init__(self, geometry, window, parent,
+                 orientation=Orientation.horizontal):
         self.geometry = geometry
         if window:
-            self.windows = [window]
+            self.children = [window]
         else:
-            self.windows = []
-        self.nodes = []
+            self.children = []
         self.parent = parent
+        self.orientation = orientation
 
     def add_window(self, window):
         '''Add window to node or node child'''
-        self.windows.append(window)
+        self.children.append(window)
 
     def get_all_windows(self):
         '''Return list of all windows in current node
         and current node children'''
         windows = []
-        for node in self.nodes:
-            if node.children:
-                windows += node.get_all_windows()
+        for node in self.children:
+            if isinstance(node, Node):
+                if node.children:
+                    windows += node.get_all_windows()
+            else:
+                windows.append(node)
 
         return windows
 
     def remove_window(self, window):
         '''Remove window from tree'''
-        if window in self.windows:
-            self.windows.remove(window)
+        if window in self.children:
+            self.children.remove(window)
         else:
-            for node in self.nodes:
-                node.remove_window(window)
+            for node in self.children:
+                if isinstance(node, Node):
+                    node.remove_window(window)
 
     def move_left(self, window):
-        if window in self.windows:
-            i = self.windows.index(window)
+        if window in self.children:
+            i = self.children.index(window)
             if i > 0:
-                self.windows[i-1], self.windows[i] = self.windows[i], self.windows[i-1]
+                self.children[i -
+                              1], self.children[i] = self.children[i], self.children[i -
+                                                                                     1]
         else:
-            for node in self.nodes:
+            for node in self.children:
                 node.move_left(window)
 
     def move_right(self, window):
-        if window in self.windows:
-            i = self.windows.index(window)
-            if i < len(self.windows)-1:
-                self.windows[i+1], self.windows[i] = self.windows[i], self.windows[i+1]
+        if window in self.children:
+            i = self.children.index(window)
+            if i < len(self.children) - 1:
+                if isinstance(self.children[i + 1], Node):
+                    self.children.remove(window)
+                    self.children[i].add_window(window)
+                else:
+                    self.children[i +
+                                  1], self.children[i] = self.children[i], self.children[i +
+                                                                                         1]
         else:
-            for node in self.nodes:
+            for node in self.children:
                 node.move_left(window)

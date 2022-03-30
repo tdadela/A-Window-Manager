@@ -1,5 +1,5 @@
-from lib.node import Node
 import socket
+from lib.node import Node
 
 
 class WorkspaceManager:
@@ -13,27 +13,28 @@ class WorkspaceManager:
         self.host = socket.gethostname()
         self.port = 8080
 
-
     def get_current_workspace(self):
         return self.workspaces[self.active_workspace]
 
     def change_workspace(self, target):
         if target == self.active_workspace:
             return
-        for window in self.get_current_workspace().windows:
+        for window in self.get_current_workspace().get_all_windows():
             # map/unmap doesn't need display.sync() to take effect
             window.unmap()
 
         self.active_workspace = target
 
-        for window in self.get_current_workspace().windows:
+        for window in self.get_current_workspace().get_all_windows():
             window.map()
 
         message = str(target + 1)
-        breakpoint()
-        with socket.socket() as s:
-            s.connect((self.host, self.port))
-            s.send(message.encode('utf-8'))
+        with socket.socket() as soc:  # TODO: Jakub, please, improve this part of code
+            try:
+                soc.connect((self.host, self.port))
+                soc.send(message.encode('utf-8'))
+            except:
+                pass
 
         # self.draw_windows()
 

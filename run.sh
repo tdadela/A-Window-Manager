@@ -1,6 +1,6 @@
 #!/bin/bash
 
-size="800x600"
+size="1200x800"
 
 if [[ $# -eq 1 ]]; then
 	size=$1
