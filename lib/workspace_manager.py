@@ -1,10 +1,11 @@
-from lib.tree import Tree
+from lib.node import Node
 
 
 class WorkspaceManager:
 
     def __init__(self, geometry, no_workspaces):
-        self.workspaces = [Tree(geometry) for i in range(no_workspaces)]
+        self.workspaces = [
+            Node(geometry, None, None) for i in range(no_workspaces)]
         self.active_workspace = 0
 
     def get_current_workspace(self):
@@ -33,6 +34,14 @@ class WorkspaceManager:
         for wsp in self.workspaces:
             wsp.remove_window(window)
 
+    def move_window_left(self, window):
+        self.workspaces[
+            self.active_workspace].move_left(window)
+
+    def move_window_right(self, window):
+        self.workspaces[
+            self.active_workspace].move_right(window)
+
     def move_between_workspaces(self, window, target):
         self.remove_window(window)
-        self.workspaces[target].receive_window(window)
+        self.workspaces[target].add_window(window)

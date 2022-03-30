@@ -8,9 +8,12 @@ shortcuts = {
     'full_screen_key': 'f',
     'close_window_key': 'q',
     'launcher_key': 'd',
+    'move_left': 'h',
+    'move_right': 'l',
 }
 
 workspace_keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+# move_keys = ['h', 'j', 'k', 'l']
 
 LOGFILE = 'wm.log'
 LAUNCHER = 'dmenu_run'

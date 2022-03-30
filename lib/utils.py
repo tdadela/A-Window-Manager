@@ -16,10 +16,12 @@ def check_program_existence(prog):
 
 
 def get_program_location(prog):
+    '''Absolute path for given program name'''
     result = run_bash_command(f"which {prog}")
     if not result:
         print(
-            f"There is no {prog} on your computer. Please install it for wm to work properly.")
+            f"There is no {prog} on your computer. \
+            Please install it for wm to work properly.")
         return ""
 
     return result

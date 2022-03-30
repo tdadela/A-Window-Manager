@@ -5,9 +5,9 @@ from Xlib import X, XK
 from Xlib.display import Display
 import lib.utils
 import config
+import setting
 from lib.workspace_manager import WorkspaceManager
-from setting import shortcut, workspace_number, NO_WORKSPACES, on_startup, MODKEY_MASK, CHANGE_WINDOW_WORKSPACE
-from lib.tree import Tree
+from setting import shortcut, workspace_number, on_startup, MODKEY_MASK
 
 
 class WindowManager:
@@ -21,7 +21,7 @@ class WindowManager:
         self.height = self.root_window.get_geometry().height
         self.width = self.root_window.get_geometry().width
         self.wsm = WorkspaceManager(
-            self.root_window.get_geometry(), NO_WORKSPACES)
+            self.root_window.get_geometry(), setting.NO_WORKSPACES)
 
         self.root_window.change_attributes(
             event_mask=X.SubstructureRedirectMask)
@@ -31,7 +31,8 @@ class WindowManager:
             )
         for i in itertools.chain(workspace_number.keys()):
             self.root_window.grab_key(
-                i, CHANGE_WINDOW_WORKSPACE, 1, X.GrabModeAsync, X.GrabModeAsync
+                i, setting.CHANGE_WINDOW_WORKSPACE, 1,
+                X.GrabModeAsync, X.GrabModeAsync
             )
 
     def draw_windows(self):
@@ -70,12 +71,15 @@ class WindowManager:
                     self.draw_windows()
                 break
 
-    def run_launcher(self):
+    @staticmethod
+    def run_launcher():
+        '''Execute application launcher'''
         lib.utils.run_application(
             lib.utils.get_program_location(config.LAUNCHER).split()
         )
 
     def close_window(self):
+        '''Close active window'''
         if self.active:
             self.active.destroy()  # too brutal
             current_windows = self.wsm.get_current_workspace().windows
@@ -84,6 +88,7 @@ class WindowManager:
             self.draw_windows()
 
     def full_screen(self):
+        '''Turn off/on full screen mode'''
         if not self.active:
             return
 
@@ -103,7 +108,7 @@ class WindowManager:
 
     def handle_events(self):
         '''Handle X11 events'''
-        current_windows = self.wsm.get_current_workspace().windows
+        current_windows = self.wsm.get_current_workspace().get_all_windows()
         for window in current_windows:
             if window not in self.root_window.query_tree().children:
                 current_windows.remove(window)
@@ -122,10 +127,12 @@ class WindowManager:
                     self.wsm.change_workspace(
                         workspace_number[event.detail]
                     )
-                elif event.state == CHANGE_WINDOW_WORKSPACE:
+                    self.draw_windows()
+                elif event.state == setting.CHANGE_WINDOW_WORKSPACE:
                     if self.active:
                         self.wsm.move_between_workspaces(
                             self.active, workspace_number[event.detail])
+                        self.draw_windows()
 
             if event.detail == shortcut['launcher_key']:
                 self.run_launcher()
@@ -133,9 +140,19 @@ class WindowManager:
                 self.close_window()
             elif event.detail == shortcut['full_screen_key']:
                 self.full_screen()
+            elif event.detail == shortcut['move_left']:
+                if self.active:
+                    self.wsm.move_window_left(self.active)
+                    self.draw_windows()
+            elif event.detail == shortcut['move_right']:
+                if self.active:
+                    self.wsm.move_window_right(self.active)
+                    self.draw_windows()
 
     def set_active(self):
         '''Set focused windows'''
+        #  print(self.display.get_input_focus())
+        #  self.active = self.display.get_input_focus()  # ['Window']
         pointed = self.root_window.query_pointer().child
         if pointed != self.root_window or isinstance(pointed, int):
             self.active = pointed
