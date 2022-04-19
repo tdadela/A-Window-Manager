@@ -97,7 +97,8 @@ class WindowManager:
     def close_window(self):
         '''Close active window'''
         if self.active:
-            self.active.destroy()  # too brutal
+            # self.active.destroy()  # too brutal
+            self.active.kill_client()
             self.wsm.remove_window(self.active)
             self.active = None
             self.draw_windows()
