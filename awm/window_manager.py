@@ -16,7 +16,6 @@ class WindowManager:
 
     def __init__(self):
         self.active = None
-        self.horizontal = True
         self.display = Display()
         self.root_window = self.display.screen().root
         self.height = self.root_window.get_geometry().height
@@ -43,7 +42,7 @@ class WindowManager:
             windows_to_draw,
             width=self.width,
             height=self.height,
-            horizontal=self.horizontal)
+            horizontal=self.wsm.is_horizontal())
         self.display.flush()
 
     def handle_maprequest(self, event):
@@ -151,7 +150,7 @@ class WindowManager:
                     self.wsm.move_window_right(self.active)
                     self.draw_windows()
             elif event.detail == shortcut['rotate']:
-                self.horizontal = not self.horizontal
+                self.wsm.change_orientation()
                 self.draw_windows()
 
     def set_active(self):

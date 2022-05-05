@@ -8,6 +8,7 @@ class WorkspaceManager:
         self.workspaces = [
             Node(geometry, None, None) for i in range(no_workspaces)]
         self.fullscreen_mode = [False for i in range(no_workspaces)]
+        self.horizontal_orientation= [True for i in range(no_workspaces)]
         self.active_workspace = 0
 
         # refactor
@@ -18,9 +19,17 @@ class WorkspaceManager:
         '''Check if current work space is in full screen mode.'''
         return self.fullscreen_mode[self.active_workspace]
 
+    def is_horizontal(self):
+        '''Check if current work space is in full screen mode.'''
+        return self.horizontal_orientation[self.active_workspace]
+
     def change_fullscreen_state(self):
         '''Enable/disable full screen mode in current work space.'''
         self.fullscreen_mode[self.active_workspace] = not self.fullscreen_mode[self.active_workspace]
+
+    def change_orientation(self):
+        '''Switch between horizontal, vertical orientation in current work space.'''
+        self.horizontal_orientation[self.active_workspace] = not self.horizontal_orientation[self.active_workspace]
 
     def get_current_workspace(self):
         return self.workspaces[self.active_workspace]
