@@ -7,11 +7,20 @@ class WorkspaceManager:
     def __init__(self, geometry, no_workspaces):
         self.workspaces = [
             Node(geometry, None, None) for i in range(no_workspaces)]
+        self.fullscreen_mode = [False for i in range(no_workspaces)]
         self.active_workspace = 0
 
         # refactor
         self.host = socket.gethostname()
         self.port = 8080
+
+    def is_fullscreen(self):
+        '''Check if current work space is in full screen mode.'''
+        return self.fullscreen_mode[self.active_workspace]
+
+    def change_fullscreen_state(self):
+        '''Enable/disable full screen mode in current work space.'''
+        self.fullscreen_mode[self.active_workspace] = not self.fullscreen_mode[self.active_workspace]
 
     def get_current_workspace(self):
         return self.workspaces[self.active_workspace]

@@ -17,7 +17,6 @@ class WindowManager:
     def __init__(self):
         self.active = None
         self.horizontal = True
-        self.fullscreen = False
         self.display = Display()
         self.root_window = self.display.screen().root
         self.height = self.root_window.get_geometry().height
@@ -55,6 +54,7 @@ class WindowManager:
         self.draw_windows()
 
     def handle_destroyrequest(self, event):
+        '''Handle X11 DestroyRequest'''
         window = event.window
         # window.unmap()
         for worksp in self.wsm.workspaces:
@@ -85,7 +85,7 @@ class WindowManager:
         if not self.active:
             return
 
-        if not self.fullscreen:
+        if not self.wsm.is_fullscreen():
             windows = self.wsm.get_current_workspace().get_all_windows()
             for window in windows:
                 if window != self.active:
@@ -105,7 +105,7 @@ class WindowManager:
                     window.map()
             self.draw_windows()
 
-        self.fullscreen = not self.fullscreen
+        self.wsm.change_fullscreen_state()
 
     def handle_events(self):
         '''Handle X11 events'''
