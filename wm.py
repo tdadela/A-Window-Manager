@@ -1,12 +1,13 @@
 ''' A Window Manager'''
 import logging
 import itertools
-from Xlib import X, XK
+from Xlib import X
 from Xlib.display import Display
 import lib.utils
 import config
 import setting
 from lib.workspace_manager import WorkspaceManager
+from lib.distribute_windows import distribute_windows
 from setting import shortcut, workspace_number, on_startup, MODKEY_MASK
 
 
@@ -39,35 +40,11 @@ class WindowManager:
     def draw_windows(self):
         '''Draw windows in horizontal tiling mode'''
         windows_to_draw = self.wsm.get_current_workspace().get_all_windows()
-        no_windows = len(windows_to_draw)
-        prev_end = -1
-        if self.horizontal:
-            for i, window in enumerate(windows_to_draw):
-                if i == no_windows - 1:
-                    fill_till = self.width
-                else:
-                    fill_till = self.width // no_windows * (i + 1)
-                window.configure(
-                    width=fill_till - prev_end,
-                    height=self.height,
-                    x=prev_end + 1,
-                    y=0
-                )
-                prev_end = fill_till
-        else:
-            for i, window in enumerate(windows_to_draw):
-                if i == no_windows - 1:
-                    fill_till = self.height
-                else:
-                    fill_till = self.height // no_windows * (i + 1)
-                window.configure(
-                    height=fill_till - prev_end,
-                    width=self.width,
-                    y=prev_end + 1,
-                    x=0
-                )
-                prev_end = fill_till
-
+        distribute_windows(
+            windows_to_draw,
+            width=self.width,
+            height=self.height,
+            horizontal=self.horizontal)
         self.display.flush()
 
     def handle_maprequest(self, event):
@@ -79,7 +56,7 @@ class WindowManager:
 
     def handle_destroyrequest(self, event):
         window = event.window
-        window.unmap()
+        # window.unmap()
         for worksp in self.wsm.workspaces:
             if window in worksp.windows:
                 worksp.windows.remove(window)
