@@ -1,5 +1,5 @@
 from tests.mock.mock_window import mock_window
-from lib.distribute_windows import distribute_windows
+from awm.distribute_windows import distribute_windows
 
 
 def zero_windows():

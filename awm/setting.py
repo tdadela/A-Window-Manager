@@ -1,8 +1,8 @@
 '''Processing user's config'''
-import config
-from Xlib import X, XK
+from Xlib import X
 from Xlib.display import Display
-from lib import utils
+from . import config
+from . import utils
 
 
 def on_startup():

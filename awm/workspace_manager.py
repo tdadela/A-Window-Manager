@@ -1,5 +1,5 @@
 import socket
-from lib.node import Node
+from awm.node import Node
 
 
 class WorkspaceManager:
