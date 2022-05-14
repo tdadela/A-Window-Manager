@@ -13,14 +13,18 @@ class MainWindow(qtw.QWidget):
         self.setWindowTitle("AWM - bar")
         self.setStyleSheet("background-color: black;")
         self.setLayout(qtw.QVBoxLayout())
-        self.labelka = qtw.QLabel("labelka")
+        self.labelka = qtw.QLabel("AWM bar is initializing.")
         labelka_gce = qtw.QGraphicsColorizeEffect()
         self.labelka.setAttribute(qtc.Qt.WA_TranslucentBackground, True)
         labelka_gce.setColor(qtc.Qt.white)
         self.labelka.setGraphicsEffect(labelka_gce)
         self.labelka.setFont(qtg.QFont('Ubuntu Mono', 18))
         self.layout().addWidget(self.labelka)
+        self.update_workspace_label(1) # TODO this doesn't work
         update_workspace_label = self.update_workspace_label
+
+        self.setFixedWidth(800)
+        self.setFixedHeight(50)
 
         self.show()
 

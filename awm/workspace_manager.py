@@ -48,7 +48,7 @@ class WorkspaceManager:
 
         message = str(target + 1)
         with socket.socket() as soc:  # TODO: Jakub, please, improve this part of code
-            try:
+            try:                      # xd ~Jakub
                 soc.connect((self.host, self.port))
                 soc.send(message.encode('utf-8'))
             except BaseException:
@@ -73,6 +73,7 @@ class WorkspaceManager:
         self.workspaces[
             self.active_workspace].move_right(window)
 
+    # TODO consider changing name to move_window_to_other_workspace
     def move_between_workspaces(self, window, target):
         self.remove_window(window)
         self.workspaces[target].add_window(window)

@@ -8,6 +8,7 @@ from . import utils
 def on_startup():
     '''User startup script.'''
     background_file = config.BACKGROUND_FILE
+    utils.run_application(['python', 'bar.py'])
     utils.run_application(
         [utils.get_program_location(config.BACKGROUND_SETTER),
             config.BACKGROUND_SETTER_ARGS, background_file]

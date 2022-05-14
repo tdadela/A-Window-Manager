@@ -13,21 +13,21 @@ def distribute_windows(windows, *, width, height, horizontal):
                 fill_till = width // no_windows * (i + 1)
             window.configure(
                 width=fill_till - prev_end,
-                height=height,
+                height=height - 50,
                 x=prev_end + 1,
-                y=0
+                y=50
             )
             prev_end = fill_till
     else:
         for i, window in enumerate(windows):
             if i == no_windows - 1:
-                fill_till = height
+                fill_till = height - 50
             else:
-                fill_till = height // no_windows * (i + 1)
+                fill_till = -50 + height // no_windows * (i + 1)
             window.configure(
                 height=fill_till - prev_end,
                 width=width,
-                y=prev_end + 1,
+                y=50 + prev_end,
                 x=0
             )
             prev_end = fill_till

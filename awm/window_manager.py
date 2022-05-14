@@ -1,4 +1,5 @@
 ''' A Window Manager'''
+import types
 import logging
 import itertools
 from Xlib import X
@@ -47,8 +48,13 @@ class WindowManager:
 
     def handle_maprequest(self, event):
         '''Handle X11 MapRequest'''
-        self.wsm.receive_window(event.window)
         self.active = event.window
+
+        if event.window.get_wm_name() == 'AWM - bar':
+            event.window.unmap = lambda *args: None
+        else:
+            self.wsm.receive_window(event.window)
+
         event.window.map()
         self.draw_windows()
 
@@ -74,6 +80,10 @@ class WindowManager:
         '''Close active window'''
         if self.active:
             # self.active.destroy()  # too brutal
+
+            if self.active.get_wm_name() == 'AWM - bar':
+                return None
+
             self.active.kill_client()
             self.wsm.remove_window(self.active)
             self.active = None
@@ -106,6 +116,7 @@ class WindowManager:
 
         self.wsm.change_fullscreen_state()
 
+
     def handle_events(self):
         '''Handle X11 events'''
         current_windows = self.wsm.get_current_workspace().get_all_windows()
@@ -115,6 +126,7 @@ class WindowManager:
                 self.wsm.remove_window(window)
                 self.draw_windows()
         event = self.display.next_event()
+
         print(event)
         self.set_active()
         logging.debug(event)
