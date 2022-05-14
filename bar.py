@@ -1,34 +1,35 @@
-import socket
-
+import PyQt5.QtWidgets as qtw
+import PyQt5.QtGui as qtg
+import PyQt5.QtCore as qtc
 import threading
-
-from kivy.app import App
-from kivy.config import Config
-
-from kivy.uix.label import Label
-from kivy.uix.floatlayout import FloatLayout
-
-Config.set('graphics', 'width', '200')
-Config.set('graphics', 'height', '200')
+import socket
 
 update_workspace_label = None
 
-
-class TestApp(App):
-    def build(self):
+class MainWindow(qtw.QWidget):
+    def __init__(self):
+        super().__init__()
         global update_workspace_label
-        self.layout = FloatLayout()
-        self.workspace_label = Label(text="workspace_label",
-                                     font_size=30)
-
-        self.layout.add_widget(self.workspace_label)
+        self.setWindowTitle("AWM - bar")
+        self.setStyleSheet("background-color: black;")
+        self.setLayout(qtw.QVBoxLayout())
+        self.labelka = qtw.QLabel("labelka")
+        labelka_gce = qtw.QGraphicsColorizeEffect()
+        self.labelka.setAttribute(qtc.Qt.WA_TranslucentBackground, True)
+        labelka_gce.setColor(qtc.Qt.white)
+        self.labelka.setGraphicsEffect(labelka_gce)
+        self.labelka.setFont(qtg.QFont('Ubuntu Mono', 18))
+        self.layout().addWidget(self.labelka)
         update_workspace_label = self.update_workspace_label
-        return self.layout
+
+        self.show()
+
 
     def update_workspace_label(self, workspace_id):
         text = " ".join(map(lambda x: str(x) if str(
             x) != workspace_id else f"[{x}]", range(1, 10)))
-        self.workspace_label.text = text
+        self.labelka.setText(text)
+
 
 
 def wait_for_wm_data():
@@ -53,4 +54,8 @@ def wait_for_wm_data():
 if __name__ == "__main__":
     x = threading.Thread(target=wait_for_wm_data)
     x.start()
-    TestApp().run()
+
+    app = qtw.QApplication([])
+    mw = MainWindow()
+
+    app.exec_()
