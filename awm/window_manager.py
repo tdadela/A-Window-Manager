@@ -1,5 +1,4 @@
 ''' A Window Manager'''
-import types
 import logging
 import itertools
 from Xlib import X
