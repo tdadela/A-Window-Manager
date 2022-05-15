@@ -6,6 +6,7 @@ import socket
 
 update_workspace_label = None
 
+
 class MainWindow(qtw.QWidget):
     def __init__(self):
         super().__init__()
@@ -20,7 +21,7 @@ class MainWindow(qtw.QWidget):
         self.labelka.setGraphicsEffect(labelka_gce)
         self.labelka.setFont(qtg.QFont('Ubuntu Mono', 18))
         self.layout().addWidget(self.labelka)
-        self.update_workspace_label(1) # TODO this doesn't work
+        self.update_workspace_label(1)
         update_workspace_label = self.update_workspace_label
 
         self.setFixedWidth(800)
@@ -28,12 +29,10 @@ class MainWindow(qtw.QWidget):
 
         self.show()
 
-
     def update_workspace_label(self, workspace_id):
-        text = " ".join(map(lambda x: str(x) if str(
-            x) != workspace_id else f"[{x}]", range(1, 10)))
+        text = " ".join(map(lambda x: str(x) if x
+                            != workspace_id else f"[{x}]", range(1, 10)))
         self.labelka.setText(text)
-
 
 
 def wait_for_wm_data():
@@ -51,7 +50,11 @@ def wait_for_wm_data():
         if not data:
             break
         print('From wm: ' + data)
-        update_workspace_label(data)
+        try:
+            new_workspace = int(data)
+            update_workspace_label(new_workspace)
+        except ValueError:
+            print('Workspace ID received from wm was invalid.')
         c.close()
 
 
