@@ -3,6 +3,7 @@ import PyQt5.QtGui as qtg
 import PyQt5.QtCore as qtc
 import threading
 import socket
+import sys
 
 update_workspace_label = None
 
@@ -24,10 +25,13 @@ class MainWindow(qtw.QWidget):
         self.update_workspace_label(1)
         update_workspace_label = self.update_workspace_label
 
-        self.setFixedWidth(800)
+        screen_width = qtw.QDesktopWidget().screenGeometry(-1).width()
+
+        self.setFixedWidth(screen_width)
         self.setFixedHeight(50)
 
         self.show()
+
 
     def update_workspace_label(self, workspace_id):
         text = " ".join(map(lambda x: str(x) if x
@@ -56,7 +60,6 @@ def wait_for_wm_data():
         except ValueError:
             print('Workspace ID received from wm was invalid.')
         c.close()
-
 
 if __name__ == "__main__":
     x = threading.Thread(target=wait_for_wm_data)
