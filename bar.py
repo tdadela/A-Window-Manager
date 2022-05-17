@@ -3,40 +3,68 @@ import PyQt5.QtGui as qtg
 import PyQt5.QtCore as qtc
 import threading
 import socket
-import sys
+import time
 
 update_workspace_label = None
+update_date_label = None
 
 
 class MainWindow(qtw.QWidget):
     def __init__(self):
         super().__init__()
         global update_workspace_label
+        global update_date_label
+
         self.setWindowTitle("AWM - bar")
         self.setStyleSheet("background-color: black;")
-        self.setLayout(qtw.QVBoxLayout())
-        self.labelka = qtw.QLabel("AWM bar is initializing.")
-        labelka_gce = qtw.QGraphicsColorizeEffect()
-        self.labelka.setAttribute(qtc.Qt.WA_TranslucentBackground, True)
-        labelka_gce.setColor(qtc.Qt.white)
-        self.labelka.setGraphicsEffect(labelka_gce)
-        self.labelka.setFont(qtg.QFont('Ubuntu Mono', 18))
-        self.layout().addWidget(self.labelka)
+        self.setLayout(qtw.QHBoxLayout())
+
+        self.workspace_label = qtw.QLabel("AWM bar is initializing.")
+
+        # refactor
+        self.workspace_label.setAttribute(qtc.Qt.WA_TranslucentBackground, True)
+        label_gce = qtw.QGraphicsColorizeEffect()
+        label_gce.setColor(qtc.Qt.white)
+        self.workspace_label.setGraphicsEffect(label_gce)
+        self.workspace_label.setAlignment(qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)
+        self.workspace_label.setFont(qtg.QFont('Ubuntu Mono', 18))
+
+        self.layout().addWidget(self.workspace_label)
+
+
+        self.date_label = qtw.QLabel("21:37")
+
+        self.date_label.setAttribute(qtc.Qt.WA_TranslucentBackground, True)
+        label_gce = qtw.QGraphicsColorizeEffect()
+        label_gce.setColor(qtc.Qt.white)
+        self.date_label.setGraphicsEffect(label_gce)
+        self.date_label.setAlignment(qtc.Qt.AlignRight | qtc.Qt.AlignVCenter)
+        self.date_label.setFont(qtg.QFont('Ubuntu Mono', 18))
+
+        self.layout().addWidget(self.date_label)
+
         self.update_workspace_label(1)
         update_workspace_label = self.update_workspace_label
+        update_date_label = self.update_date_label
 
         screen_width = qtw.QDesktopWidget().screenGeometry(-1).width()
-
         self.setFixedWidth(screen_width)
         self.setFixedHeight(50)
 
         self.show()
 
 
+
+
     def update_workspace_label(self, workspace_id):
         text = " ".join(map(lambda x: str(x) if x
                             != workspace_id else f"[{x}]", range(1, 10)))
-        self.labelka.setText(text)
+        self.workspace_label.setText(text)
+
+
+    def update_date_label(self):
+        text = time.strftime("%H:%M")
+        self.date_label.setText(text)
 
 
 def wait_for_wm_data():
@@ -61,9 +89,20 @@ def wait_for_wm_data():
             print('Workspace ID received from wm was invalid.')
         c.close()
 
+
+def date_updator():
+    time.sleep(1)
+    while True:
+        update_date_label()
+        time.sleep(60)
+
+
 if __name__ == "__main__":
-    x = threading.Thread(target=wait_for_wm_data)
-    x.start()
+    vm_listener_thread = threading.Thread(target=wait_for_wm_data)
+    vm_listener_thread.start()
+
+    date_updator_thread = threading.Thread(target=date_updator)
+    date_updator_thread.start()
 
     app = qtw.QApplication([])
     mw = MainWindow()
