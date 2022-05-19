@@ -42,7 +42,9 @@ class WindowManager:
             windows_to_draw,
             width=self.width,
             height=self.height,
-            horizontal=self.wsm.is_horizontal())
+            horizontal=self.wsm.is_horizontal(),
+            main_secondary=self.wsm.is_main_secondary()
+        )
         self.display.flush()
 
     def handle_maprequest(self, event):
@@ -115,7 +117,6 @@ class WindowManager:
 
         self.wsm.change_fullscreen_state()
 
-
     def handle_events(self):
         '''Handle X11 events'''
         current_windows = self.wsm.get_current_workspace().get_all_windows()
@@ -148,6 +149,9 @@ class WindowManager:
 
             if event.detail == shortcut['launcher_key']:
                 self.run_launcher()
+            elif event.detail == shortcut['main_secondary']:
+                self.wsm.change_view_mode()
+                self.draw_windows()
             elif event.detail == shortcut['close_window_key']:
                 self.close_window()
             elif event.detail == shortcut['full_screen_key']:

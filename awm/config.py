@@ -11,6 +11,7 @@ shortcuts = {
     'move_left': 'h',
     'move_right': 'l',
     'rotate': 'r',
+    'main_secondary': 'a'
 }
 
 workspace_keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
@@ -19,3 +20,4 @@ workspace_keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
 LOGFILE = 'wm.log'
 LAUNCHER = 'dmenu_run'
 MODKEY = '1'  # '4' for Win key, '1' for Alt key
+BORDER_WIDTH = 2
