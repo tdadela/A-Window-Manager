@@ -4,6 +4,7 @@ import PyQt5.QtCore as qtc
 import threading
 import socket
 import time
+from awm import config
 
 update_workspace_label = None
 update_date_label = None
@@ -19,29 +20,8 @@ class MainWindow(qtw.QWidget):
         self.setStyleSheet("background-color: black;")
         self.setLayout(qtw.QHBoxLayout())
 
-        self.workspace_label = qtw.QLabel("AWM bar is initializing.")
-
-        # refactor
-        self.workspace_label.setAttribute(qtc.Qt.WA_TranslucentBackground, True)
-        label_gce = qtw.QGraphicsColorizeEffect()
-        label_gce.setColor(qtc.Qt.white)
-        self.workspace_label.setGraphicsEffect(label_gce)
-        self.workspace_label.setAlignment(qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)
-        self.workspace_label.setFont(qtg.QFont('Ubuntu Mono', 18))
-
-        self.layout().addWidget(self.workspace_label)
-
-
-        self.date_label = qtw.QLabel("21:37")
-
-        self.date_label.setAttribute(qtc.Qt.WA_TranslucentBackground, True)
-        label_gce = qtw.QGraphicsColorizeEffect()
-        label_gce.setColor(qtc.Qt.white)
-        self.date_label.setGraphicsEffect(label_gce)
-        self.date_label.setAlignment(qtc.Qt.AlignRight | qtc.Qt.AlignVCenter)
-        self.date_label.setFont(qtg.QFont('Ubuntu Mono', 18))
-
-        self.layout().addWidget(self.date_label)
+        self.workspace_label = self.create_label(qtc.Qt.AlignLeft)
+        self.date_label = self.create_label(qtc.Qt.AlignRight)
 
         self.update_workspace_label(1)
         update_workspace_label = self.update_workspace_label
@@ -49,16 +29,29 @@ class MainWindow(qtw.QWidget):
 
         screen_width = qtw.QDesktopWidget().screenGeometry(-1).width()
         self.setFixedWidth(screen_width)
-        self.setFixedHeight(50)
+        self.setFixedHeight(config.BAR_HEIGHT)
 
         self.show()
 
 
+    def create_label(self, alignment):
+        label = qtw.QLabel("loading")
+        label.setAttribute(qtc.Qt.WA_TranslucentBackground, True)
+        label_gce = qtw.QGraphicsColorizeEffect()
+        label_gce.setColor(qtc.Qt.white)
+        label.setGraphicsEffect(label_gce)
+        label.setAlignment(alignment | qtc.Qt.AlignVCenter)
+        label.setFont(qtg.QFont('Ubuntu Mono', config.BAR_FONT_SIZE))
+
+        self.layout().addWidget(label)
+        
+        return label
 
 
     def update_workspace_label(self, workspace_id):
-        text = "".join(map(lambda x: f" {x} " if x
-                            != workspace_id else f"[{x}]", range(1, 10)))
+        workspace_amt = len(config.workspace_keys)
+        text = " ".join(map(lambda x: f"{x}" if x
+                            != workspace_id else f"[{x}]", range(1, workspace_amt + 1)))
         self.workspace_label.setText(text)
 
 

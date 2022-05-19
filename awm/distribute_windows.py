@@ -2,6 +2,8 @@
 from .config import BORDER_WIDTH
 BAR_HEIGHT = 50
 
+from awm import config
+
 
 def horizontal_mode(windows, width, height, x, y):
     no_windows = len(windows)
