@@ -4,6 +4,7 @@ import PyQt5.QtCore as qtc
 import threading
 import socket
 import time
+from awm import config
 
 update_workspace_label = None
 update_date_label = None
@@ -27,7 +28,7 @@ class MainWindow(qtw.QWidget):
         label_gce.setColor(qtc.Qt.white)
         self.workspace_label.setGraphicsEffect(label_gce)
         self.workspace_label.setAlignment(qtc.Qt.AlignLeft | qtc.Qt.AlignVCenter)
-        self.workspace_label.setFont(qtg.QFont('Ubuntu Mono', 18))
+        self.workspace_label.setFont(qtg.QFont('Ubuntu Mono', config.BAR_FONT_SIZE))
 
         self.layout().addWidget(self.workspace_label)
 
@@ -39,7 +40,7 @@ class MainWindow(qtw.QWidget):
         label_gce.setColor(qtc.Qt.white)
         self.date_label.setGraphicsEffect(label_gce)
         self.date_label.setAlignment(qtc.Qt.AlignRight | qtc.Qt.AlignVCenter)
-        self.date_label.setFont(qtg.QFont('Ubuntu Mono', 18))
+        self.date_label.setFont(qtg.QFont('Ubuntu Mono', config.BAR_FONT_SIZE))
 
         self.layout().addWidget(self.date_label)
 
@@ -49,7 +50,7 @@ class MainWindow(qtw.QWidget):
 
         screen_width = qtw.QDesktopWidget().screenGeometry(-1).width()
         self.setFixedWidth(screen_width)
-        self.setFixedHeight(50)
+        self.setFixedHeight(config.BAR_HEIGHT)
 
         self.show()
 
@@ -57,7 +58,7 @@ class MainWindow(qtw.QWidget):
 
 
     def update_workspace_label(self, workspace_id):
-        text = " ".join(map(lambda x: str(x) if x
+        text = " ".join(map(lambda x: f"{x}" if x
                             != workspace_id else f"[{x}]", range(1, 10)))
         self.workspace_label.setText(text)
 

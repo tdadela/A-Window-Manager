@@ -19,3 +19,6 @@ workspace_keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
 LOGFILE = 'wm.log'
 LAUNCHER = 'dmenu_run'
 MODKEY = '1'  # '4' for Win key, '1' for Alt key
+
+BAR_HEIGHT = 50
+BAR_FONT_SIZE = 18

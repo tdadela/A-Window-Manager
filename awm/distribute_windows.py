@@ -1,5 +1,7 @@
 '''Distributes set of windows on screen'''
 
+from awm import config
+
 
 def distribute_windows(windows, *, width, height, horizontal):
     '''Draw windows in horizontal tiling mode'''
@@ -13,21 +15,21 @@ def distribute_windows(windows, *, width, height, horizontal):
                 fill_till = width // no_windows * (i + 1)
             window.configure(
                 width=fill_till - prev_end,
-                height=height - 50,
+                height=height - config.BAR_HEIGHT,
                 x=prev_end + 1,
-                y=50
+                y=config.BAR_HEIGHT
             )
             prev_end = fill_till
     else:
         for i, window in enumerate(windows):
             if i == no_windows - 1:
-                fill_till = height - 50
+                fill_till = height - config.BAR_HEIGHT
             else:
-                fill_till = -50 + height // no_windows * (i + 1)
+                fill_till = -config.BAR_HEIGHT + height // no_windows * (i + 1)
             window.configure(
                 height=fill_till - prev_end,
                 width=width,
-                y=50 + prev_end,
+                y=config.BAR_HEIGHT + prev_end,
                 x=0
             )
             prev_end = fill_till
