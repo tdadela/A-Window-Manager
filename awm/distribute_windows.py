@@ -1,8 +1,5 @@
 '''Distributes set of windows on screen'''
-from turtle import width
-from .config import BORDER_WIDTH, BAR_HEIGHT
-
-from awm import config
+from config import BORDER_WIDTH, BAR_HEIGHT
 
 
 def horizontal_mode(windows, width, height, x, y):
