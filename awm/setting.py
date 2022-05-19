@@ -35,4 +35,4 @@ for i, key in enumerate(config.workspace_keys):
 
 NO_WORKSPACES = len(config.workspace_keys)
 MODKEY_MASK = X.Mod1Mask if config.MODKEY == '1' else X.Mod4Mask
-CHANGE_WINDOW_WORKSPACE = MODKEY_MASK | 1  # XK.XK_Shift_L
+CHANGE_WINDOW_WORKSPACE = MODKEY_MASK | X.ShiftMask
