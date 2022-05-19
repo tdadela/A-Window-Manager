@@ -18,8 +18,6 @@ class WindowManager:
         self.active = None
         self.display = Display()
         self.root_window = self.display.screen().root
-        self.height = self.root_window.get_geometry().height
-        self.width = self.root_window.get_geometry().width
         self.wsm = WorkspaceManager(
             self.root_window.get_geometry(), setting.NO_WORKSPACES)
 
@@ -35,13 +33,15 @@ class WindowManager:
                 X.GrabModeAsync, X.GrabModeAsync
             )
 
+    def get_workspace_windows(self):
+        return self.wsm.get_current_workspace().get_all_windows()
+
     def draw_windows(self):
         '''Draw windows in horizontal tiling mode'''
-        windows_to_draw = self.wsm.get_current_workspace().get_all_windows()
+        windows_to_draw = self.get_workspace_windows()
         distribute_windows(
             windows_to_draw,
-            width=self.width,
-            height=self.height,
+            geometry=self.root_window.get_geometry(),
             horizontal=self.wsm.is_horizontal(),
             main_secondary=self.wsm.is_main_secondary()
         )
@@ -96,20 +96,20 @@ class WindowManager:
             return
 
         if not self.wsm.is_fullscreen():
-            windows = self.wsm.get_current_workspace().get_all_windows()
+            windows = self.get_workspace_windows()
             for window in windows:
                 if window != self.active:
                     window.unmap()
             self.active.configure(
                 #  stack_mode=X.Above,
-                width=self.width,
-                height=self.height,
+                width=self.root_window.get_geometry().width,
+                height=self.root_window.get_geometry().height,
                 y=0,
                 x=0
             )
             self.display.flush()
         else:
-            windows = self.wsm.get_current_workspace().get_all_windows()
+            windows = self.get_workspace_windows()
             for window in windows:
                 if window != self.active:
                     window.map()
@@ -119,7 +119,7 @@ class WindowManager:
 
     def handle_events(self):
         '''Handle X11 events'''
-        current_windows = self.wsm.get_current_workspace().get_all_windows()
+        current_windows = self.get_workspace_windows()
         for window in current_windows:
             if window not in self.root_window.query_tree().children:
                 # current_windows.remove(window)

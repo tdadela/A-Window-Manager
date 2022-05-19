@@ -1,6 +1,6 @@
 '''Distributes set of windows on screen'''
-from .config import BORDER_WIDTH
-BAR_HEIGHT = 50
+from turtle import width
+from .config import BORDER_WIDTH, BAR_HEIGHT
 
 from awm import config
 
@@ -53,17 +53,16 @@ def main_secondary_mode(windows, width, height, horizontal):
 
     if horizontal:
         horizontal_mode([windows[0]], width // 2, height, x, y)
-        print(windows[1:], width, height, width // 2)
         horizontal_mode(windows[1:], width - width // 2, height, width // 2, y)
     else:
         vertical_mode([windows[0]], width // 2, height, x, y)
-        print(windows[1:], width, height, width // 2)
         vertical_mode(windows[1:], width - width // 2, height, width // 2, y)
 
 
-def distribute_windows(windows, *, width, height, horizontal, main_secondary):
+def distribute_windows(windows, *, geometry, horizontal, main_secondary):
     '''Draw windows in horizontal tiling mode'''
-    print(f"{main_secondary=}")
+    width = geometry.width
+    height = geometry.height
     if main_secondary:
         main_secondary_mode(windows, width, height, horizontal)
     elif horizontal:
