@@ -58,8 +58,9 @@ class MainWindow(qtw.QWidget):
 
 
     def update_workspace_label(self, workspace_id):
+        workspace_amt = len(config.workspace_keys)
         text = " ".join(map(lambda x: f"{x}" if x
-                            != workspace_id else f"[{x}]", range(1, 10)))
+                            != workspace_id else f"[{x}]", range(1, workspace_amt + 1)))
         self.workspace_label.setText(text)
 
 
