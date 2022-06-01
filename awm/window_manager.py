@@ -3,12 +3,12 @@ import logging
 import itertools
 from Xlib import X
 from Xlib.display import Display
-import config
-import setting
-import utils
-from workspace_manager import WorkspaceManager
-from distribute_windows import distribute_windows
-from setting import shortcut, workspace_number, on_startup, MODKEY_MASK
+from . import config
+from . import setting
+from . import utils
+from .workspace_manager import WorkspaceManager
+from .distribute_windows import distribute_windows
+from .setting import shortcut, workspace_number, on_startup, MODKEY_MASK
 
 
 class WindowManager:

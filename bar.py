@@ -33,7 +33,6 @@ class MainWindow(qtw.QWidget):
 
         self.show()
 
-
     def create_label(self, alignment):
         label = qtw.QLabel("loading")
         label.setAttribute(qtc.Qt.WA_TranslucentBackground, True)
@@ -44,16 +43,14 @@ class MainWindow(qtw.QWidget):
         label.setFont(qtg.QFont('Ubuntu Mono', config.BAR_FONT_SIZE))
 
         self.layout().addWidget(label)
-        
-        return label
 
+        return label
 
     def update_workspace_label(self, workspace_id):
         workspace_amt = len(config.workspace_keys)
-        text = " ".join(map(lambda x: f"{x}" if x
-                            != workspace_id else f"[{x}]", range(1, workspace_amt + 1)))
+        text = " ".join(map(lambda x: f"{x}" if x != workspace_id else f"[{x}]", range(
+            1, workspace_amt + 1)))
         self.workspace_label.setText(text)
-
 
     def update_date_label(self):
         text = time.strftime("%H:%M")

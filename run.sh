@@ -9,6 +9,6 @@ fi
 source venv/bin/activate
 Xephyr -screen $size -br :1 &
 emu_pid=$!
-DISPLAY=:1 python awm
+DISPLAY=:1 python wm.py
 
 kill $emu_pid

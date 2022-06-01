@@ -1,5 +1,5 @@
 import socket
-from node import Node
+from awm.node import Node
 
 
 class WorkspaceManager:
@@ -8,8 +8,8 @@ class WorkspaceManager:
         self.workspaces = [
             Node(geometry, None, None) for i in range(no_workspaces)]
         self.fullscreen_mode = [False for i in range(no_workspaces)]
-        self.main_secondary_mode= [False for i in range(no_workspaces)]
-        self.horizontal_orientation= [True for i in range(no_workspaces)]
+        self.main_secondary_mode = [False for i in range(no_workspaces)]
+        self.horizontal_orientation = [True for i in range(no_workspaces)]
         self.active_workspace = 0
 
         # refactor
