@@ -1,38 +1,49 @@
-from tests.mock.mock_window import mock_window
+import unittest
+from tests.mock.mock_window import MockWindow, Geometry
 from awm.distribute_windows import distribute_windows
 
 
-def zero_windows(is_horizontal):
+class TestWinowDistribution(unittest.TestCase):
+
+    def test_screen_covering(self):
+        resolutions = [(500, 500), (1378, 768), (1920, 1080), (4000, 2000)]
+        for (width, height) in resolutions:
+            geometry = Geometry(width, height)
+            for horizontal in [True, False]:
+                n_windows(horizontal, geometry)
+
+    def test_distribute_zero_windows(self):
+        resolutions = [(500, 500), (1378, 768), (1920, 1080), (4000, 2000)]
+        for (width, height) in resolutions:
+            geometry = Geometry(width, height)
+            for horizontal in [True, False]:
+                zero_windows(horizontal, geometry)
+
+
+def zero_windows(is_horizontal, geometry):
     '''Case: work space without any window.'''
-    screen_width = 1920
-    screen_height = 1080
     windows = []
     distribute_windows(
         windows,
-        width=screen_width,
-        height=screen_height,
+        geometry=geometry,
+        main_secondary=False,
         horizontal=is_horizontal)
     assert sum([win.get_area() for win in windows]) == 0
 
 
-def n_windows(is_horizontal):
+def n_windows(is_horizontal, geometry):
     '''Case: work space with 1 to 5 windows.'''
-    screen_width = 1920
-    screen_height = 1080
     for no_windows in range(1, 6):
-        windows = [mock_window() for i in range(no_windows)]
+        windows = [MockWindow() for i in range(no_windows)]
         distribute_windows(
             windows,
-            width=screen_width,
-            height=screen_height,
+            geometry=geometry,
+            main_secondary=False,
             horizontal=is_horizontal)
 
         assert sum([win.get_area() for win in windows]
-                   ) == screen_height * screen_width
+                   ) == geometry.height * geometry.width
 
 
 if __name__ == '__main__':
-    zero_windows(True)
-    n_windows(True)
-    zero_windows(False)
-    n_windows(False)
+    unittest.main()
