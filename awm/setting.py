@@ -1,4 +1,5 @@
 '''Processing user's config'''
+import logging
 from Xlib import X
 from Xlib.display import Display
 from . import config
@@ -36,3 +37,4 @@ for i, key in enumerate(config.workspace_keys):
 NO_WORKSPACES = len(config.workspace_keys)
 MODKEY_MASK = X.Mod1Mask if config.MODKEY == '1' else X.Mod4Mask
 CHANGE_WINDOW_WORKSPACE = MODKEY_MASK | X.ShiftMask
+LOG_LEVEL = logging.getLevelName(config.LOGGING_LEVEL)

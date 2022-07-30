@@ -8,7 +8,7 @@ from . import setting
 from . import utils
 from .workspace_manager import WorkspaceManager
 from .distribute_windows import distribute_windows
-from .setting import shortcut, workspace_number, on_startup, MODKEY_MASK
+from .setting import shortcut, workspace_number
 
 
 class WindowManager:
@@ -32,7 +32,7 @@ class WindowManager:
             event_mask=X.SubstructureRedirectMask)
         for i in itertools.chain(shortcut.values(), workspace_number.keys()):
             self.root_window.grab_key(
-                i, MODKEY_MASK, 1, X.GrabModeAsync, X.GrabModeAsync
+                i, setting.MODKEY_MASK, 1, X.GrabModeAsync, X.GrabModeAsync
             )
         for i in itertools.chain(workspace_number.keys()):
             self.root_window.grab_key(
@@ -146,7 +146,7 @@ class WindowManager:
 
     def handle_keypress(self, event):
         if event.detail in workspace_number:
-            if event.state == MODKEY_MASK:
+            if event.state == setting.MODKEY_MASK:
                 self.wsm.change_workspace(
                     workspace_number[event.detail]
                 )
@@ -208,10 +208,6 @@ def main():
     logging.basicConfig(filename=config.LOGFILE,
                         filemode='w', level=logging.DEBUG)
     logging.debug('Window manager started.')
-    on_startup()
+    setting.on_startup()
     while True:
         window_manager.handle_events()
-
-
-if __name__ == "__main__":
-    main()

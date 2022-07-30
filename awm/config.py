@@ -18,6 +18,7 @@ workspace_keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
 # move_keys = ['h', 'j', 'k', 'l']
 
 LOGFILE = 'wm.log'
+LOGGING_LEVEL = 'DEBUG'
 LAUNCHER = 'dmenu_run'
 MODKEY = '1'  # '4' for Win key, '1' for Alt key
 BORDER_WIDTH = 2
